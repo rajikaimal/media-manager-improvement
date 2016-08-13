@@ -17,6 +17,29 @@ defined('_JEXEC') or die;
  */
 abstract class MediaHelper
 {
+
+	/**
+	 * Configure the Linkbar.
+	 *
+	 * @param   string  $vName  The name of the active view.
+	 *
+	 * @return  void
+	 *
+	 * @since   3.7
+	 */
+	public static function addSubmenu($vName)
+	{
+		JHtmlSidebar::addEntry(
+			JText::_('COM_MEDIA_SUBMENU_FILES'),
+			'index.php?option=com_media&view=',
+			$vName == 'files'
+		);
+		JHtmlSidebar::addEntry(
+			JText::_('COM_MEDIA_SUBMENU_CATEGORIES'),
+			'index.php?option=com_categories&extension=com_media',
+			$vName == 'categories');
+	}
+
 	/**
 	 * Checks if the file is an image
 	 *

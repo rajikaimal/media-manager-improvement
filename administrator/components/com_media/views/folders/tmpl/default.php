@@ -68,6 +68,7 @@ $doc->addScriptDeclaration("var basepath = '" . $params->get('image_path', 'imag
 <div id="system-message-container"></div>
 <div class="row-fluid">
     <div id="j-sidebar-container" class="span2">
+        <?php echo $this->sidebar; ?>
         <div id="j-toggle-sidebar-wrapper">
             <div id="j-toggle-button-wrapper" class="j-toggle-button-wrapper">
                 <div

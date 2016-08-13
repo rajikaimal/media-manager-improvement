@@ -9,6 +9,8 @@
 
 defined('_JEXEC') or die;
 
+JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+
 /**
  * HTML View class for the Media component
  *
@@ -68,6 +70,12 @@ class MediaViewFolders extends JViewLegacy
 		$this->user = JFactory::getUser();
 		$this->bar  = JToolbar::getInstance('toolbar');
 
+		if ($this->getLayout() !== 'modal')
+		{
+			MediaHelper::addSubmenu('articles');
+		}
+
+
 		$ftp = !JClientHelper::hasCredentials('ftp');
 
 		$images        = $this->get('images');
@@ -90,6 +98,8 @@ class MediaViewFolders extends JViewLegacy
 		{
 			$this->state->folder = COM_MEDIA_BASEURL;
 		}
+
+		$this->sidebar = JHtmlSidebar::render();
 
 		// Set the toolbar
 		$this->addToolbar();
