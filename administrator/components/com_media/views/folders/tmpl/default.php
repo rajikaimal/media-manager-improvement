@@ -95,6 +95,11 @@ $doc->addScriptDeclaration("var basepath = '" . $params->get('image_path', 'imag
     </div>
 
     <div id="j-main-container" class="span10">
+        <?php
+        // Search tools bar
+        //echo JLayoutHelper::render('joomla.searchtools.default', array('view' => $this));
+        ?>
+
         <?php if (($user->authorise('core.create', 'com_media')) && $this->require_ftp) : ?>
             <?php echo $this->loadTemplate('ftp'); ?>
         <?php endif; ?>

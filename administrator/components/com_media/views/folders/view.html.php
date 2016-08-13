@@ -72,7 +72,7 @@ class MediaViewFolders extends JViewLegacy
 
 		if ($this->getLayout() !== 'modal')
 		{
-			MediaHelper::addSubmenu('articles');
+			MediaHelper::addSubmenu('files');
 		}
 
 
@@ -93,6 +93,9 @@ class MediaViewFolders extends JViewLegacy
 		$this->current_folder = $currentFolder;
 		$this->subfolders     = $subfolders;
 		$this->state          = $state;
+
+		$this->filterForm    = $this->get('FilterForm');
+		$this->activeFilters = $this->get('ActiveFilters');
 
 		if ($this->state->folder === "")
 		{
