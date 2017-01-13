@@ -143,7 +143,7 @@ class MediaControllerApi extends JControllerLegacy
 						JPluginHelper::importPlugin('media-action');
 
 						// The object to send
-						$obj = new JObject();
+						$obj = new JObject;
 						$obj->name     = $name;
 						$obj->path     = $path;
 						$obj->fullpath = JPath::clean($root . '/' . $path . '/' . $name);
@@ -155,7 +155,9 @@ class MediaControllerApi extends JControllerLegacy
 						if (in_array(false, $result, true))
 						{
 							// There are some errors in the plugins
-							$this->sendResponse(new Exception(JText::plural('COM_MEDIA_ERROR_BEFORE_SAVE', count($errors = $obj->getErrors()), implode('<br />', $errors))));
+							$this->sendResponse(
+								new Exception(JText::plural('COM_MEDIA_ERROR_BEFORE_SAVE', count($errors = $obj->getErrors()), implode('<br />', $errors)))
+							);
 						}
 
 						// A file needs to be created
