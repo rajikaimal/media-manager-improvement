@@ -142,4 +142,63 @@ class PlgMediaActionResize extends MediaAction
 
 		return $newImage;
 	}
+
+	/**
+	 * Resizes the new created files.
+	 *
+	 * @param   string    $context  The context
+	 * @param   stdClass  $file     The file object
+	 * @param   boolean   $isNew    If the file is a new one
+	 *
+	 * @return  void
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function onContentAfterSave($context, $file, $isNew)
+	{
+		if (!$isNew || $context != 'com_media.file')
+		{
+			// Nothing to do
+			return;
+		}
+
+		if (!$this->params->get('autoresize'))
+		{
+			// Auto resize is not active
+			return;
+		}
+
+		$extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+		if (!in_array($extension, array('jpg', 'png', 'gif')))
+		{
+			// Can't handle the extension
+			return;
+		}
+
+		// Set up the resource
+		$resource = imagecreatefromstring(file_get_contents($file->fullpath));
+
+		// Process the image
+		$this->process($resource, $this->params->toArray());
+
+		// Fetch the resized image
+		ob_start();
+		switch (strtolower(pathinfo($path, PATHINFO_EXTENSION)))
+		{
+			case 'jpg':
+				imagejpeg($resource);
+				break;
+			case 'gif':
+				imagegif($resource);
+				break;
+			case 'png':
+				imagepng($resource);
+				break;
+		}
+		$data = ob_get_contents();
+		ob_end_clean();
+
+		// Write the new image back to the file
+		file_put_contents($file->fullpath, $data);
+	}
 }

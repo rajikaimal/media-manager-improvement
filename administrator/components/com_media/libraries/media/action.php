@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
  *
  * @since  __DEPLOY_VERSION__
  */
-abstract class MediaAction implements MediaActionInterface
+abstract class MediaAction extends JPlugin implements MediaActionInterface
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.

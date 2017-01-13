@@ -16,4 +16,33 @@
         <language tag="en-GB">en-GB.plg_media-action_resize.ini</language>
         <language tag="en-GB">en-GB.plg_media-action_resize.sys.ini</language>
     </languages>
+    <config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+				    name="autoresize"
+				    type="list"
+				    label="Auto Resize"
+				    description="Should the plugin automatically resize new uploaded files?"
+				    >
+				    <option value="1">JYES</option>
+				    <option value="0">JNO</option>
+				</field>
+				<field
+					name="width"
+					type="text"
+					label="The Width"
+					description="The width the images should be converted to."
+					size="5"
+				/>
+				<field
+					name="height"
+					type="text"
+					label="The Height"
+					description="The height the images should be converted to."
+					size="5"
+				/>
+			</fieldset>
+		</fields>
+	</config>
 </extension>

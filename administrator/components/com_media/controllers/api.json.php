@@ -42,7 +42,7 @@ class MediaControllerApi extends JControllerLegacy
 		{
 			// Compile the root path
 			$root = JPATH_ROOT . '/' . JComponentHelper::getParams('com_media')->get('file_path', 'images');
-			$root = rtrim($root) . '/';
+			$root = rtrim($root, '/') . '/';
 
 			// Default to the local adapter
 			$config['fileadapter'] = new MediaFileAdapterLocal($root);
@@ -135,13 +135,39 @@ class MediaControllerApi extends JControllerLegacy
 
 					if ($mediaContent)
 					{
+						// @todo the local file should be fetched from the adapter itself like #77
+						$root = JPATH_ROOT . '/' . JComponentHelper::getParams('com_media')->get('file_path', 'images');
+
+						// Import the nedeed plugins
+						JPluginHelper::importPlugin('content');
+						JPluginHelper::importPlugin('media-action');
+
+						// The object to send
+						$obj = new JObject();
+						$obj->name     = $name;
+						$obj->path     = $path;
+						$obj->fullpath = JPath::clean($root . '/' . $path . '/' . $name);
+						$obj->content  = $mediaContent;
+
+						// Trigger the onContentBeforeSave event
+						$result = JEventDispatcher::getInstance()->trigger('onContentBeforeSave', array('com_media.file', &$obj, true));
+
+						if (in_array(false, $result, true))
+						{
+							// There are some errors in the plugins
+							$this->sendResponse(new Exception(JText::plural('COM_MEDIA_ERROR_BEFORE_SAVE', count($errors = $obj->getErrors()), implode('<br />', $errors))));
+						}
+
 						// A file needs to be created
-						$data = $this->adapter->createFile($name, $path, $mediaContent);
+						$this->adapter->createFile($name, $path, $obj->content);
+
+						// Trigger the onContentAfterSave event
+						$dispatcher->trigger('onContentAfterSave', array('com_media.file', &$obj, true));
 					}
 					else
 					{
 						// A file needs to be created
-						$data = $this->adapter->createFolder($name, $path);
+						$this->adapter->createFolder($name, $path);
 					}
 					break;
 				case 'put':
@@ -149,7 +175,7 @@ class MediaControllerApi extends JControllerLegacy
 					$name         = basename($path);
 					$mediaContent = base64_decode($content->get('content'));
 
-					$data = $this->adapter->updateFile($name, str_replace($name, '', $path), $mediaContent);
+					$this->adapter->updateFile($name, str_replace($name, '', $path), $mediaContent);
 					break;
 				default:
 					throw new BadMethodCallException('Method not supported yet!');
