@@ -6,7 +6,8 @@ import Toolbar from "./components/toolbar/toolbar.vue";
 import Breadcrumb from "./components/breadcrumb/breadcrumb.vue";
 import Browser from "./components/browser/browser.vue";
 import BrowserItem from "./components/browser/items/item";
-import store from './store/store'
+import store from './store/store';
+import dnd from './components/draganddrop/dnd.vue';
 
 // Register the vue components
 Vue.component('media-tree', Tree);
