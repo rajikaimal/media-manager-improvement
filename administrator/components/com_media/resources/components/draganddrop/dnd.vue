@@ -81,7 +81,8 @@
 				removeProgessBar();
 			};
 
-			xhr.open("POST", '/administrator/index.php?option=com_media&task=api.files&format=json&path=' + uploadPath + '/' + name, true);
+            // @todo use the global path
+			xhr.open("POST", '/administrator/index.php?option=com_media&task=api.files&format=json&path=' + uploadPath, true);
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.send(JSON.stringify(forUpload));
 
