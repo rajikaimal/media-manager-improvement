@@ -131,8 +131,7 @@ class MediaControllerApi extends JControllerLegacy
 				case 'post':
 					$content      = $this->input->json;
 					$name         = $content->get('name');
-					// This is BAD!!!
-					$mediaContent = base64_decode(json_decode($this->input->json->getRaw())->content);
+					$mediaContent = base64_decode($content->get('content', '', 'raw'));
 
 					if ($mediaContent)
 					{
