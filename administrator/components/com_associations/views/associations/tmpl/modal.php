@@ -48,10 +48,10 @@ $app->getDocument()->addScriptDeclaration(
  ?>" method="post" name="adminForm" id="adminForm">
 
 <?php if (!empty( $this->sidebar)) : ?>
-	<div id="j-sidebar-container" class="span2">
+	<div id="j-sidebar-container" class="col-md-2">
 		<?php echo $this->sidebar; ?>
 	</div>
-	<div id="j-main-container" class="span10">
+	<div id="j-main-container" class="col-md-10">
 <?php else : ?>
 	<div id="j-main-container">
 <?php endif;?>
@@ -126,11 +126,11 @@ $app->getDocument()->addScriptDeclaration(
 						<?php endif; ?>
 					</td>
 					<td class="small">
-						<?php echo $item->language_title ? JHtml::_('image', 'mod_languages/' . $item->language_image . '.gif', $item->language_title, array('title' => $item->language_title), true) . '&nbsp;' . $this->escape($item->language_title) : JText::_('JUNDEFINED'); ?>
+						<?php echo JLayoutHelper::render('joomla.content.language', $item); ?>
 					</td>
 					<td>
 						<?php if (true || $item->association) : ?>
-							<?php echo AssociationsHelper::getAssociationHtmlList($this->extensionName, $this->typeName, (int) $item->id, $item->language, false); ?>
+							<?php echo AssociationsHelper::getAssociationHtmlList($this->extensionName, $this->typeName, (int) $item->id, $item->language, false, false); ?>
 						<?php endif; ?>
 					</td>
 					<?php if (!empty($this->typeFields['menutype'])) : ?>
@@ -153,9 +153,9 @@ $app->getDocument()->addScriptDeclaration(
 
 	<?php endif; ?>
 
-		<input type="hidden" name="task" value=""/>
-		<input type="hidden" name="forcedItemType" value="<?php echo $app->input->get('forcedItemType', '', 'string'); ?>" />
-		<input type="hidden" name="forcedLanguage" value="<?php echo $app->input->get('forcedLanguage', '', 'cmd'); ?>" />
+		<input type="hidden" name="task" value="">
+		<input type="hidden" name="forcedItemType" value="<?php echo $app->input->get('forcedItemType', '', 'string'); ?>">
+		<input type="hidden" name="forcedLanguage" value="<?php echo $app->input->get('forcedLanguage', '', 'cmd'); ?>">
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
 </form>

@@ -36,7 +36,7 @@ class JDatabaseDriverMysqliTest extends TestCaseDatabaseMysqli
 	 *
 	 * @return  array
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.7.0
 	 */
 	public function dataTestQuoteName()
 	{
@@ -152,7 +152,7 @@ class JDatabaseDriverMysqliTest extends TestCaseDatabaseMysqli
 	 * @return  void
 	 *
 	 * @dataProvider  dataTestQuoteName
-	 * @since         __DEPLOY_VERSION__
+	 * @since         3.7.0
 	 */
 	public function testQuoteName($text, $asPart, $expected)
 	{
@@ -307,7 +307,7 @@ class JDatabaseDriverMysqliTest extends TestCaseDatabaseMysqli
 		$title->Comment    = '';
 
 		$start_date = new stdClass;
-		$start_date->Default    = null;
+		$start_date->Default    = '0000-00-00 00:00:00';
 		$start_date->Field      = 'start_date';
 		$start_date->Type       = 'datetime';
 		$start_date->Null       = 'NO';

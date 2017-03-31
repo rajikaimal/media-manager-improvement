@@ -129,8 +129,6 @@ class ContactModelContact extends JModelAdmin
 				return false;
 			}
 
-			$this->createTagsHelper($this->tagsObserver, $this->type, $pk, $this->typeAlias, $this->table);
-
 			// Store the row.
 			if (!$this->table->store())
 			{
@@ -173,8 +171,6 @@ class ContactModelContact extends JModelAdmin
 				$this->table->load($pk);
 				$this->table->user_id = (int) $value;
 
-				$this->createTagsHelper($this->tagsObserver, $this->type, $pk, $this->typeAlias, $this->table);
-
 				if (!$this->table->store())
 				{
 					$this->setError($this->table->getError());
@@ -211,7 +207,7 @@ class ContactModelContact extends JModelAdmin
 		{
 			if ($record->published != -2)
 			{
-				return;
+				return false;
 			}
 
 			return JFactory::getUser()->authorise('core.delete', 'com_contact.category.' . (int) $record->catid);
@@ -547,7 +543,6 @@ class ContactModelContact extends JModelAdmin
 				$fields->addAttribute('name', 'associations');
 				$fieldset = $fields->addChild('fieldset');
 				$fieldset->addAttribute('name', 'item_associations');
-				$fieldset->addAttribute('description', 'COM_CONTACT_ITEM_ASSOCIATIONS_FIELDSET_DESC');
 
 				foreach ($languages as $language)
 				{

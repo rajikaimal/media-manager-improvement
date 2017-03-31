@@ -21,7 +21,7 @@ class AssociationsModelAssociations extends JModelList
 	 *
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
-	 * @since   3.7.0
+	 * @since  3.7.0
 	 *
 	 * @see     JController
 	 */
@@ -124,7 +124,7 @@ class AssociationsModelAssociations extends JModelList
 	 *
 	 * @return  string  A store id.
 	 *
-	 * @since   3.7.0
+	 * @since  3.7.0
 	 */
 	protected function getStoreId($id = '')
 	{
@@ -146,7 +146,7 @@ class AssociationsModelAssociations extends JModelList
 	 *
 	 * @return  JDatabaseQuery|bool
 	 *
-	 * @since   3.7.0
+	 * @since  3.7.0
 	 */
 	protected function getListQuery()
 	{
@@ -369,8 +369,7 @@ class AssociationsModelAssociations extends JModelList
 		// Filter on the level.
 		if ($level = $this->getState('filter.level'))
 		{
-			$tableAlias = in_array($extensionName, array('com_menus', 'com_categories')) ? 'a' : 'c';
-			$query->where($db->qn($tableAlias . '.level') . ' <= ' . ((int) $level + (int) $baselevel - 1));
+			$query->where($db->qn('a.level') . ' <= ' . ((int) $level + (int) $baselevel - 1));
 		}
 
 		// Filter by menu type.
@@ -417,7 +416,7 @@ class AssociationsModelAssociations extends JModelList
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @since   3.7.0
+	 * @since  3.7.0
 	 */
 	public function purge($context = '', $key = '')
 	{
@@ -466,7 +465,7 @@ class AssociationsModelAssociations extends JModelList
 	 *
 	 * @return  boolean  True on success
 	 *
-	 * @since   3.7.0
+	 * @since  3.7.0
 	 */
 	public function clean($context = '', $key = '')
 	{

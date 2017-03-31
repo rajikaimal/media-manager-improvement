@@ -143,25 +143,20 @@ abstract class JHtml
 	/**
 	 * Registers a function to be called with a specific key
 	 *
-	 * @param   string  $key       The name of the key
-	 * @param   string  $function  Function or method
+	 * @param   string    $key       The name of the key
+	 * @param   callable  $function  Function or method
 	 *
 	 * @return  boolean  True if the function is callable
 	 *
 	 * @since   1.6
 	 */
-	public static function register($key, $function)
+	public static function register($key, callable $function)
 	{
 		list($key) = static::extract($key);
 
-		if (is_callable($function))
-		{
-			static::$registry[$key] = $function;
+		static::$registry[$key] = $function;
 
-			return true;
-		}
-
-		return false;
+		return true;
 	}
 
 	/**
@@ -215,13 +210,8 @@ abstract class JHtml
 	 * @since   1.6
 	 * @throws  InvalidArgumentException
 	 */
-	protected static function call($function, $args)
+	protected static function call(callable $function, $args)
 	{
-		if (!is_callable($function))
-		{
-			throw new InvalidArgumentException('Function not supported', 500);
-		}
-
 		// PHP 5.3 workaround
 		$temp = array();
 
@@ -384,7 +374,7 @@ abstract class JHtml
 
 				/*
 				 * Loop on 1 or 2 files and break on first found.
-				 * Add the content of the MD5SUM file located in the same folder to url to ensure cache browser refresh
+				 * Add the content of the MD5SUM file located in the same folder to URL to ensure cache browser refresh
 				 * This MD5SUM file must represent the signature of the folder content
 				 */
 				foreach ($files as $file)
@@ -529,7 +519,7 @@ abstract class JHtml
 
 				/*
 				 * Loop on 1 or 2 files and break on first found.
-				 * Add the content of the MD5SUM file located in the same folder to url to ensure cache browser refresh
+				 * Add the content of the MD5SUM file located in the same folder to URL to ensure cache browser refresh
 				 * This MD5SUM file must represent the signature of the folder content
 				 */
 				foreach ($files as $file)
@@ -581,7 +571,7 @@ abstract class JHtml
 			return $file;
 		}
 
-		return '<img src="' . $file . '" alt="' . $alt . '" ' . trim((is_array($attribs) ? ArrayHelper::toString($attribs) : $attribs) . ' /') . '>';
+		return '<img src="' . $file . '" alt="' . $alt . '" ' . trim((is_array($attribs) ? ArrayHelper::toString($attribs) : $attribs)) . '>';
 	}
 
 	/**
@@ -717,7 +707,7 @@ abstract class JHtml
 			{
 				return $includes[0];
 			}
-			
+
 			return $includes;
 		}
 
@@ -949,7 +939,7 @@ abstract class JHtml
 			// Use a formatted string combining the title and content.
 			elseif ($content != '')
 			{
-				$result = '<strong>' . $title . '</strong><br />' . $content;
+				$result = '<strong>' . $title . '</strong><br>' . $content;
 			}
 			else
 			{
@@ -1026,6 +1016,13 @@ abstract class JHtml
 		$singleHeader = isset($attribs['singleHeader']) ? $attribs['singleHeader'] : false;
 		$hint         = isset($attribs['placeholder']) ? $attribs['placeholder'] : '';
 		$class        = isset($attribs['class']) ? $attribs['class'] : '';
+		$onchange     = isset($attribs['onChange']) ? $attribs['onChange'] : '';
+
+		$showTime     = !empty($showTime) ? ($showTime === 'true' ? "1" : "0") : "1";
+		$todayBtn     = !empty($todayBtn) ? ($todayBtn === 'true' ? "1" : "0") : "1";
+		$weekNumbers  = !empty($weekNumbers) ? ($weekNumbers === 'true' ? "1" : "0") : "0";
+		$fillTable    = !empty($fillTable) ? ($fillTable === 'true' ? "1" : "0") : "1";
+		$singleHeader = !empty($singleHeader) ? ($singleHeader === 'true' ? "1" : "0") : "0";
 
 		// Format value when not nulldate ('0000-00-00 00:00:00'), otherwise blank it as it would result in 1970-01-01.
 		if ($value && $value != JFactory::getDbo()->getNullDate() && strtotime($value) !== false)
@@ -1063,7 +1060,8 @@ abstract class JHtml
 			'helperPath'   => $helperPath,
 			'localesPath'  => $localesPath,
 			'direction'    => $direction,
-			);
+			'onchange'     => $onchange,
+		);
 
 		return JLayoutHelper::render('joomla.form.field.calendar', $data, null, null);
 	}

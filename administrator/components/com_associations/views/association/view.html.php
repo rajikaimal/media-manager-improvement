@@ -61,7 +61,7 @@ class AssociationsViewAssociation extends JViewLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.7.0
+	 * @since  3.7.0
 	 */
 	public function display($tpl = null)
 	{
@@ -154,7 +154,7 @@ class AssociationsViewAssociation extends JViewLegacy
 	 *
 	 * @return  void
 	 *
-	 * @since   3.7.0
+	 * @since  3.7.0
 	 */
 	protected function addToolbar()
 	{
@@ -176,13 +176,13 @@ class AssociationsViewAssociation extends JViewLegacy
 		$bar = JToolbar::getInstance('toolbar');
 
 		$bar->appendButton(
-			'Custom', '<button onclick="Joomla.submitbutton(\'reference\')"'
+			'Custom', '<button onclick="Joomla.submitbutton(\'reference\')" '
 			. 'class="btn btn-small btn-success"><span class="icon-apply icon-white"></span>'
 			. JText::_('COM_ASSOCIATIONS_SAVE_REFERENCE') . '</button>', 'reference'
 		);
 
 		$bar->appendButton(
-			'Custom', '<button onclick="Joomla.submitbutton(\'target\')"'
+			'Custom', '<button onclick="Joomla.submitbutton(\'target\')" '
 			. 'class="btn btn-small btn-success"><span class="icon-apply icon-white"></span>'
 			. JText::_('COM_ASSOCIATIONS_SAVE_TARGET') . '</button>', 'target'
 		);

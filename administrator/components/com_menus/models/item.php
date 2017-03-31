@@ -602,7 +602,7 @@ class MenusModelItem extends JModelAdmin
 			$filters = JFactory::getApplication()->getUserState('com_menus.items.filter');
 			$data['published'] = (isset($filters['published']) ? $filters['published'] : null);
 			$data['language'] = (isset($filters['language']) ? $filters['language'] : null);
-			$data['access'] = (isset($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access'));
+			$data['access'] = (!empty($filters['access']) ? $filters['access'] : JFactory::getConfig()->get('access'));
 		}
 
 		if (isset($data['menutype']) && !$this->getState('item.menutypeid'))
@@ -769,9 +769,6 @@ class MenusModelItem extends JModelAdmin
 		{
 			// Note that all request arguments become reserved parameter names.
 			$result->params = array_merge($result->params, $args);
-			
-			// Add Itemid to the alias link value
-			$result->link .= $result->id;
 		}
 
 		if ($table->type == 'url')
@@ -852,7 +849,7 @@ class MenusModelItem extends JModelAdmin
 	/**
 	 * Get the list of all view levels
 	 *
-	 * @return  array|bool  An array of all view levels (id, title).
+	 * @return  stdClass[]|bool  An array of all view levels (id, title).
 	 *
 	 * @since   3.4
 	 */
@@ -1215,7 +1212,6 @@ class MenusModelItem extends JModelAdmin
 				$fields->addAttribute('name', 'associations');
 				$fieldset = $fields->addChild('fieldset');
 				$fieldset->addAttribute('name', 'item_associations');
-				$fieldset->addAttribute('description', 'COM_MENUS_ITEM_ASSOCIATIONS_FIELDSET_DESC');
 
 				foreach ($languages as $language)
 				{
@@ -1327,7 +1323,6 @@ class MenusModelItem extends JModelAdmin
 	 */
 	public function save($data)
 	{
-		$dispatcher = JEventDispatcher::getInstance();
 		$pk         = (!empty($data['id'])) ? $data['id'] : (int) $this->getState('item.id');
 		$isNew      = true;
 		$table   = $this->getTable();
@@ -1413,7 +1408,7 @@ class MenusModelItem extends JModelAdmin
 		}
 
 		// Trigger the before save event.
-		$result = $dispatcher->trigger($this->event_before_save, array($context, &$table, $isNew));
+		$result = JFactory::getApplication()->triggerEvent($this->event_before_save, array($context, &$table, $isNew));
 
 		// Store the data.
 		if (in_array(false, $result, true)|| !$table->store())
@@ -1424,7 +1419,7 @@ class MenusModelItem extends JModelAdmin
 		}
 
 		// Trigger the after save event.
-		$dispatcher->trigger($this->event_after_save, array($context, &$table, $isNew));
+		JFactory::getApplication()->triggerEvent($this->event_after_save, array($context, &$table, $isNew));
 
 		// Rebuild the tree path.
 		if (!$table->rebuildPath($table->id))

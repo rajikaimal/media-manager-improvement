@@ -12,7 +12,8 @@ defined('JPATH_PLATFORM') or die;
 /**
  * DocumentError class, provides an easy interface to parse and display an error page
  *
- * @since  11.1
+ * @since       11.1
+ * @deprecated  5.0  Use \Joomla\Cms\Error\RendererInterface objects instead
  */
 class JDocumentError extends JDocument
 {
@@ -153,7 +154,7 @@ class JDocumentError extends JDocument
 		if (JFactory::$language)
 		{
 			$lang = JFactory::getLanguage();
-	
+
 			// 1.5 or core then 1.6
 			$lang->load('tpl_' . $template, JPATH_BASE, null, false, true)
 				|| $lang->load('tpl_' . $template, $directory . '/' . $template, null, false, true);
@@ -228,6 +229,9 @@ class JDocumentError extends JDocument
 			echo '		<td class="TD"><strong>Function</strong></td>';
 			echo '		<td class="TD"><strong>Location</strong></td>';
 			echo '	</tr>';
+
+			// Add the position of the actual file
+			array_unshift($backtrace, array('file' => $this->_error->getFile(), 'line' => $this->_error->getLine(), 'function' => ''));
 
 			for ($i = count($backtrace) - 1; $i >= 0; $i--)
 			{

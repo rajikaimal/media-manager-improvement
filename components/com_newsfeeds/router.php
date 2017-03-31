@@ -41,19 +41,8 @@ class NewsfeedsRouter extends JComponentRouterView
 		parent::__construct($app, $menu);
 
 		$this->attachRule(new JComponentRouterRulesMenu($this));
-
-		$params = JComponentHelper::getParams('com_content');
-
-		if ($params->get('sef_advanced', 0))
-		{
-			$this->attachRule(new JComponentRouterRulesStandard($this));
-			$this->attachRule(new JComponentRouterRulesNomenu($this));
-		}
-		else
-		{
-			JLoader::register('NewsfeedsRouterRulesLegacy', __DIR__ . '/helpers/legacyrouter.php');
-			$this->attachRule(new NewsfeedsRouterRulesLegacy($this));
-		}
+		$this->attachRule(new JComponentRouterRulesStandard($this));
+		$this->attachRule(new JComponentRouterRulesNomenu($this));
 	}
 
 	/**
@@ -69,20 +58,18 @@ class NewsfeedsRouter extends JComponentRouterView
 		$category = JCategories::getInstance($this->getName())->get($id);
 		if ($category)
 		{
+			$path = array_reverse($category->getPath(), true);
+			$path[0] = '1:root';
+
 			if ($this->noIDs)
 			{
-				$path = array_reverse($category->getPath(), true);
 				foreach ($path as &$segment)
 				{
 					list($id, $segment) = explode(':', $segment, 2);
 				}
+			}
 
-				return $path;
-			}
-			else
-			{
-				return array_reverse($category->getPath(), true);
-			}
+			return $path;
 		}
 
 		return array();
@@ -111,25 +98,23 @@ class NewsfeedsRouter extends JComponentRouterView
 	 */
 	public function getNewsfeedSegment($id, $query)
 	{
+		if (!strpos($id, ':'))
+		{
+			$db = JFactory::getDbo();
+			$dbquery = $db->getQuery(true);
+			$dbquery->select($dbquery->qn('alias'))
+				->from($dbquery->qn('#__newsfeeds'))
+				->where('id = ' . $dbquery->q((int) $id));
+			$db->setQuery($dbquery);
+
+			$id .= ':' . $db->loadResult();
+		}
+
 		if ($this->noIDs)
 		{
-			if (strpos($id, ':'))
-			{
-				list($void, $segment) = explode(':', $id, 2);
+			list($void, $segment) = explode(':', $id, 2);
 
-				return array($void => $segment);
-			}
-			else
-			{
-				$db = JFactory::getDbo();
-				$dbquery = $db->getQuery(true);
-				$dbquery->select($dbquery->qn('alias'))
-					->from($dbquery->qn('#__newsfeeds'))
-					->where('id = ' . $dbquery->q((int) $id));
-				$db->setQuery($dbquery);
-
-				return array($id => $id . ':' . $db->loadResult());
-			}
+			return array($void => $segment);
 		}
 
 		return array((int) $id => $id);
@@ -209,41 +194,4 @@ class NewsfeedsRouter extends JComponentRouterView
 
 		return (int) $segment;
 	}
-}
-
-/**
- * newsfeedsBuildRoute
- *
- * These functions are proxys for the new router interface
- * for old SEF extensions.
- *
- * @param   array  &$query  The segments of the URL to parse.
- *
- * @return array
- *
- * @deprecated  4.0  Use Class based routers instead
- */
-function newsfeedsBuildRoute(&$query)
-{
-	$app = JFactory::getApplication();
-	$router = new NewsfeedsRouter($app, $app->getMenu());
-
-	return $router->build($query);
-}
-
-/**
- * newsfeedsParseRoute
- *
- * @param   array  $segments  The segments of the URL to parse.
- *
- * @return array
- *
- * @deprecated  4.0  Use Class based routers instead
- */
-function newsfeedsParseRoute($segments)
-{
-	$app = JFactory::getApplication();
-	$router = new NewsfeedsRouter($app, $app->getMenu());
-
-	return $router->parse($segments);
 }

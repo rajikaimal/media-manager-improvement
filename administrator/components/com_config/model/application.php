@@ -250,8 +250,31 @@ class ConfigModelApplication extends ConfigModelForm
 		// Purge the database session table if we are changing to the database handler.
 		if ($prev['session_handler'] != 'database' && $data['session_handler'] == 'database')
 		{
-			$table = JTable::getInstance('session');
-			$table->purge(-1);
+			$query = $this->_db->getQuery(true)
+				->delete($this->_db->quoteName('#__session'))
+				->where($this->_db->quoteName('time') . ' < ' . (time() - 1));
+			$this->_db->setQuery($query);
+			$this->_db->execute();
+		}
+
+		// Set the shared session configuration
+		if (isset($data['shared_session']))
+		{
+			$currentShared = isset($prev['shared_session']) ? $prev['shared_session'] : '0';
+
+			// Has the user enabled shared sessions?
+			if ($data['shared_session'] == 1 && $currentShared == 0)
+			{
+				// Generate a random shared session name
+				$data['session_name'] = JUserHelper::genRandomPassword(16);
+			}
+
+			// Has the user disabled shared sessions?
+			if ($data['shared_session'] == 0 && $currentShared == 1)
+			{
+				// Remove the session name value
+				unset($data['session_name']);
+			}
 		}
 
 		// Set the shared session configuration
@@ -777,8 +800,8 @@ class ConfigModelApplication extends ConfigModelForm
 		// Current group is a Super User group, so calculated setting is "Allowed (Super User)".
 		if ($isSuperUserGroupAfter)
 		{
-			$result['class'] = 'label label-success';
-			$result['text'] = '<span class="icon-lock icon-white"></span>' . JText::_('JLIB_RULES_ALLOWED_ADMIN');
+			$result['class'] = 'badge badge-success';
+			$result['text'] = '<span class="icon-lock icon-white" aria-hidden="true"></span>' . JText::_('JLIB_RULES_ALLOWED_ADMIN');
 		}
 		// Not super user.
 		else
@@ -788,13 +811,13 @@ class ConfigModelApplication extends ConfigModelForm
 			// If recursive calculated setting is "Denied" or null. Calculated permission is "Not Allowed (Inherited)".
 			if ($inheritedGroupRule === null || $inheritedGroupRule === false)
 			{
-				$result['class'] = 'label label-important';
+				$result['class'] = 'badge badge-danger';
 				$result['text']  = JText::_('JLIB_RULES_NOT_ALLOWED_INHERITED');
 			}
 			// If recursive calculated setting is "Allowed". Calculated permission is "Allowed (Inherited)".
 			else
 			{
-				$result['class'] = 'label label-success';
+				$result['class'] = 'badge badge-success';
 				$result['text']  = JText::_('JLIB_RULES_ALLOWED_INHERITED');
 			}
 
@@ -802,20 +825,20 @@ class ConfigModelApplication extends ConfigModelForm
 
 			/**
 			 * @to do: incorect info
-			 * If a component as a permission that doesn't exists in global config (ex: frontend editing in com_modules) by default
+			 * If a component has a permission that doesn't exists in global config (ex: frontend editing in com_modules) by default
 			 * we get "Not Allowed (Inherited)" when we should get "Not Allowed (Default)".
 			 */
 
 			// If there is an explicity permission "Not Allowed". Calculated permission is "Not Allowed".
 			if ($assetRule === false)
 			{
-				$result['class'] = 'label label-important';
+				$result['class'] = 'badge badge-danger';
 				$result['text']  = JText::_('JLIB_RULES_NOT_ALLOWED');
 			}
 			// If there is an explicity permission is "Allowed". Calculated permission is "Allowed".
 			elseif ($assetRule === true)
 			{
-				$result['class'] = 'label label-success';
+				$result['class'] = 'badge badge-success';
 				$result['text']  = JText::_('JLIB_RULES_ALLOWED');
 			}
 
@@ -824,7 +847,7 @@ class ConfigModelApplication extends ConfigModelForm
 			// Global configuration with "Not Set" permission. Calculated permission is "Not Allowed (Default)".
 			if (empty($parentGroupId) && $isGlobalConfig === true && $assetRule === null)
 			{
-				$result['class'] = 'label label-important';
+				$result['class'] = 'badge badge-danger';
 				$result['text']  = JText::_('JLIB_RULES_NOT_ALLOWED_DEFAULT');
 			}
 
@@ -835,8 +858,8 @@ class ConfigModelApplication extends ConfigModelForm
 			 */
 			elseif ($inheritedGroupParentAssetRule === false || $inheritedParentGroupRule === false)
 			{
-				$result['class'] = 'label label-important';
-				$result['text']  = '<span class="icon-lock icon-white"></span>' . JText::_('JLIB_RULES_NOT_ALLOWED_LOCKED');
+				$result['class'] = 'badge badge-danger';
+				$result['text']  = '<span class="icon-lock icon-white" aria-hidden="true"></span>' . JText::_('JLIB_RULES_NOT_ALLOWED_LOCKED');
 			}
 		}
 

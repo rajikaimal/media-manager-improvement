@@ -9,6 +9,7 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Cms\Event\BeforeExecuteEvent;
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
 
@@ -164,6 +165,30 @@ class PlgSystemLanguageFilter extends JPlugin
 	}
 
 	/**
+	 * Listener for the onBeforeExecute event
+	 *
+	 * @param   BeforeExecuteEvent  $event  The Event object
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0
+	 */
+	public function onBeforeExecute(BeforeExecuteEvent $event)
+	{
+		/** @var JApplicationCms $app */
+		$app = $event->getApplication();
+
+		if (!$app->isSite())
+		{
+			return;
+		}
+
+		// If a language was specified it has priority, otherwise use user or default language settings
+		$app->setLanguageFilter(true);
+		$app->setDetectBrowser($this->params->get('detect_browser', '1') == '1');
+	}
+
+	/**
 	 * Add build preprocess rule to router.
 	 *
 	 * @param   JRouter  &$router  JRouter object.
@@ -278,7 +303,7 @@ class PlgSystemLanguageFilter extends JPlugin
 			// Do we have a URL Language Code ?
 			if (!isset($this->sefs[$sef]))
 			{
-				// Check if remove default url language code is set
+				// Check if remove default URL language code is set
 				if ($this->params->get('remove_default_prefix', 0))
 				{
 					if ($parts[0])

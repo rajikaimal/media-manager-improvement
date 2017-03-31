@@ -42,19 +42,8 @@ class ContactRouter extends JComponentRouterView
 		parent::__construct($app, $menu);
 
 		$this->attachRule(new JComponentRouterRulesMenu($this));
-
-		$params = JComponentHelper::getParams('com_content');
-
-		if ($params->get('sef_advanced', 0))
-		{
-			$this->attachRule(new JComponentRouterRulesStandard($this));
-			$this->attachRule(new JComponentRouterRulesNomenu($this));
-		}
-		else
-		{
-			JLoader::register('ContactRouterRulesLegacy', __DIR__ . '/helpers/legacyrouter.php');
-			$this->attachRule(new ContactRouterRulesLegacy($this));
-		}
+		$this->attachRule(new JComponentRouterRulesStandard($this));
+		$this->attachRule(new JComponentRouterRulesNomenu($this));
 	}
 
 	/**
@@ -71,20 +60,18 @@ class ContactRouter extends JComponentRouterView
 
 		if ($category)
 		{
+			$path = array_reverse($category->getPath(), true);
+			$path[0] = '1:root';
+
 			if ($this->noIDs)
 			{
-				$path = array_reverse($category->getPath(), true);
 				foreach ($path as &$segment)
 				{
 					list($id, $segment) = explode(':', $segment, 2);
 				}
+			}
 
-				return $path;
-			}
-			else
-			{
-				return array_reverse($category->getPath(), true);
-			}
+			return $path;
 		}
 
 		return array();
@@ -113,25 +100,23 @@ class ContactRouter extends JComponentRouterView
 	 */
 	public function getContactSegment($id, $query)
 	{
+		if (!strpos($id, ':'))
+		{
+			$db = JFactory::getDbo();
+			$dbquery = $db->getQuery(true);
+			$dbquery->select($dbquery->qn('alias'))
+				->from($dbquery->qn('#__contact_details'))
+				->where('id = ' . $dbquery->q((int) $id));
+			$db->setQuery($dbquery);
+
+			$id .= ':' . $db->loadResult();
+		}
+
 		if ($this->noIDs)
 		{
-			if (strpos($id, ':'))
-			{
-				list($void, $segment) = explode(':', $id, 2);
+			list($void, $segment) = explode(':', $id, 2);
 
-				return array($void => $segment);
-			}
-			else
-			{
-				$db = JFactory::getDbo();
-				$dbquery = $db->getQuery(true);
-				$dbquery->select($dbquery->qn('alias'))
-					->from($dbquery->qn('#__contact_details'))
-					->where('id = ' . $dbquery->q((int) $id));
-				$db->setQuery($dbquery);
-
-				return array($id => $id . ':' . $db->loadResult());
-			}
+			return array($void => $segment);
 		}
 
 		return array((int) $id => $id);
@@ -211,44 +196,4 @@ class ContactRouter extends JComponentRouterView
 
 		return (int) $segment;
 	}
-}
-
-/**
- * Contact router functions
- *
- * These functions are proxys for the new router interface
- * for old SEF extensions.
- *
- * @param   array  &$query  An array of URL arguments
- *
- * @return  array  The URL arguments to use to assemble the subsequent URL.
- *
- * @deprecated  4.0  Use Class based routers instead
- */
-function ContactBuildRoute(&$query)
-{
-	$app = JFactory::getApplication();
-	$router = new ContactRouter($app, $app->getMenu());
-
-	return $router->build($query);
-}
-
-/**
- * Contact router functions
- *
- * These functions are proxys for the new router interface
- * for old SEF extensions.
- *
- * @param   array  $segments  The segments of the URL to parse.
- *
- * @return  array  The URL attributes to be used by the application.
- *
- * @deprecated  4.0  Use Class based routers instead
- */
-function ContactParseRoute($segments)
-{
-	$app = JFactory::getApplication();
-	$router = new ContactRouter($app, $app->getMenu());
-
-	return $router->parse($segments);
 }

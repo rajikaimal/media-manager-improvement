@@ -91,7 +91,7 @@ class JUpdater extends JAdapter
 	{
 		if (!isset(self::$instance))
 		{
-			self::$instance = new JUpdater;
+			self::$instance = new static;
 		}
 
 		return self::$instance;
@@ -157,6 +157,7 @@ class JUpdater extends JAdapter
 				/** @var JTableUpdate $update */
 				foreach ($updateObjects as $update)
 				{
+					$update->check();
 					$update->store();
 				}
 			}
