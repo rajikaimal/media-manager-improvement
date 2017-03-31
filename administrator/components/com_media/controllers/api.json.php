@@ -11,6 +11,8 @@ defined('_JEXEC') or die;
 
 use Joomla\Cms\Controller\Controller;
 
+JLoader::import('joomla.filesystem.file');
+
 /**
  * Api Media Controller
  *
@@ -104,7 +106,7 @@ class MediaControllerApi extends Controller
 				case 'post':
 					$content      = $this->input->json;
 					$name         = $content->getString('name');
-					$mediaContent = base64_decode($content->get('content'));
+					$mediaContent = base64_decode($content->get('content', '', 'raw'));
 
 					if ($mediaContent)
 					{

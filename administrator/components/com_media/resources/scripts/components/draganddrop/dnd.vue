@@ -29,13 +29,17 @@
 
 	// The upload logic
 	window.UploadFile = function (name, f) {
+		var options = Joomla.getOptions('com_media', {});
+
 		var forUpload = {
 			'name': name,
 			'content': f.replace(/data:+.+base64,/, '')
 		};
-// @TODO get these from the store
+		forUpload[options.csrfToken] = 1;
+
+        // @TODO get these from the store
 		var uploadPath = '';
-		//var url = 'index.php?option=com_media&path=/' + uploadPath + '/' + name;
+		var url = options.apiBaseUrl +  + '&task=api.files&path=' +'index.php?option=com_media&path=/' + uploadPath + '/' + name;
 
 
 			var xhr = new XMLHttpRequest();
@@ -82,7 +86,7 @@
 			};
 
             // @todo use the global path
-			xhr.open("POST", '/administrator/index.php?option=com_media&task=api.files&format=json&path=' + uploadPath, true);
+			xhr.open("POST", options.apiBaseUrl + '&task=api.files&path=' + uploadPath, true);
 			xhr.setRequestHeader('Content-Type', 'application/json');
 			xhr.send(JSON.stringify(forUpload));
 

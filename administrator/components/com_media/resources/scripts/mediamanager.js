@@ -10,6 +10,7 @@ import BrowserItem from "./components/browser/items/item";
 import Modal from "./components/modals/modal.vue";
 import CreateFolderModal from "./components/modals/create-folder-modal.vue";
 import Infobar from "./components/infobar/infobar.vue";
+import DND from "./components/draganddrop/dnd.vue";
 import Translate from "./plugins/translate";
 import store from './store/store';
 
